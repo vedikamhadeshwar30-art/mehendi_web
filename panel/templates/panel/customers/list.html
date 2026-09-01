@@ -1,0 +1,71 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Customers{% endblock %}
+{% block page_title %}Customer Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>All Customers</h1>
+    <p>{{ customers.count }} registered client{{ customers.count|pluralize }}</p>
+  </div>
+</div>
+
+<form method="GET" class="filter-bar">
+  <input type="text" name="q" value="{{ search_q }}" placeholder="Search by name, email, username..." style="min-width:260px;">
+  <button type="submit" class="btn-admin btn-admin-primary btn-admin-sm">Search</button>
+  <a href="{% url 'panel:customers_list' %}" class="btn-admin btn-admin-outline btn-admin-sm">Reset</a>
+</form>
+
+<div class="card">
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Joined</th>
+          <th>Bookings</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in customers %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;background:linear-gradient(135deg,var(--henna),var(--henna-dark));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;flex-shrink:0;">
+                  {{ c.first_name|default:c.username|make_list|first|upper }}
+                </div>
+                <div>
+                  <div style="font-weight:600;">{{ c.get_full_name|default:c.username }}</div>
+                </div>
+              </div>
+            </td>
+            <td style="color:var(--text-muted);font-size:0.88rem;">@{{ c.username }}</td>
+            <td style="font-size:0.88rem;">{{ c.email }}</td>
+            <td style="font-size:0.83rem;color:var(--text-muted);">{{ c.date_joined|date:"M d, Y" }}</td>
+            <td>
+              <span style="font-weight:700;color:var(--henna);">{{ c.booking_count }}</span>
+              <span style="font-size:0.8rem;color:var(--text-muted);"> booking{{ c.booking_count|pluralize }}</span>
+            </td>
+            <td>
+              {% if c.is_active %}
+                <span class="status-pill" style="background:#f0fdf4;color:#16a34a;">Active</span>
+              {% else %}
+                <span class="status-pill" style="background:#fef2f2;color:#dc2626;">Disabled</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'panel:customer_detail' c.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">Profile</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No customers found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

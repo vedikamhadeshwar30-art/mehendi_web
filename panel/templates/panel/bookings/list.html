@@ -1,0 +1,88 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Bookings{% endblock %}
+{% block page_title %}Booking Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>All Bookings</h1>
+    <p>Search, filter, and manage all client appointments</p>
+  </div>
+</div>
+
+<!-- Filter Bar -->
+<form method="GET" class="filter-bar">
+  <input type="text" name="q" value="{{ search_q }}" placeholder="Search by name, email, ref..." style="min-width:220px;">
+  <select name="status">
+    <option value="">All Statuses</option>
+    {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="service">
+    <option value="">All Services</option>
+    {% for svc in services %}
+      <option value="{{ svc.id }}" {% if service_filter == svc.id|stringformat:"s" %}selected{% endif %}>{{ svc.title }}</option>
+    {% endfor %}
+  </select>
+  <input type="date" name="date" value="{{ date_filter }}">
+  <button type="submit" class="btn-admin btn-admin-primary btn-admin-sm">Filter</button>
+  <a href="{% url 'panel:bookings_list' %}" class="btn-admin btn-admin-outline btn-admin-sm">Reset</a>
+</form>
+
+<!-- Status Quick Tabs -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'panel:bookings_list' %}" class="btn-admin btn-admin-sm {% if not status_filter %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">All</a>
+  <a href="?status=PENDING" class="btn-admin btn-admin-sm {% if status_filter == 'PENDING' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Pending</a>
+  <a href="?status=CONFIRMED" class="btn-admin btn-admin-sm {% if status_filter == 'CONFIRMED' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Confirmed</a>
+  <a href="?status=COMPLETED" class="btn-admin btn-admin-sm {% if status_filter == 'COMPLETED' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Completed</a>
+  <a href="?status=CANCELLED" class="btn-admin btn-admin-sm {% if status_filter == 'CANCELLED' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Cancelled</a>
+  <a href="?status=REJECTED" class="btn-admin btn-admin-sm {% if status_filter == 'REJECTED' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Rejected</a>
+</div>
+
+<div class="card">
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Ref #</th>
+          <th>Customer</th>
+          <th>Service</th>
+          <th>Appointment</th>
+          <th>Venue</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td><strong style="font-family:monospace;color:var(--henna);">#{{ b.booking_ref }}</strong></td>
+            <td>
+              <div style="font-weight:600;font-size:0.9rem;">{{ b.customer_name }}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">{{ b.customer_email }}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">{{ b.customer_phone }}</div>
+            </td>
+            <td style="font-size:0.88rem;">{{ b.service.title|truncatechars:30 }}</td>
+            <td>
+              <div style="font-weight:600;font-size:0.88rem;">{{ b.booking_date|date:"d M Y" }}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">{{ b.booking_time }}</div>
+            </td>
+            <td style="font-size:0.82rem;">{{ b.get_venue_type_display|truncatechars:20 }}</td>
+            <td style="font-weight:700;color:var(--henna);">₹{{ b.total_price|floatformat:0 }}</td>
+            <td><span class="status-pill status-{{ b.status }}">{{ b.get_status_display }}</span></td>
+            <td>
+              <a href="{% url 'panel:booking_detail' b.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">Details</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No bookings found matching your criteria.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

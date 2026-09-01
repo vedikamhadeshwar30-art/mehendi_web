@@ -1,0 +1,89 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Design Gallery | Aura Mehendi Artistry{% endblock %}
+{% block meta_description %}Browse our visual lookbook of bridal henna, Arabic florals, minimalist mandalas, and intricate feet mehendi artistry.{% endblock %}
+
+{% block content %}
+<section class="gallery-section" style="padding-top: 130px; min-height: 80vh;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Haute Lookbook</span>
+      <h1 class="section-title">Mehendi Design Gallery</h1>
+      <p class="section-desc">Explore hand-drawn bridal compositions, contemporary aesthetics, and festival highlights.</p>
+      <div class="motif-divider">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-gold-primary)"><path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z"/></svg>
+      </div>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="filter-container">
+      <a href="{% url 'gallery' %}?category=all" class="filter-btn {% if active_category == 'all' or not active_category %}active{% endif %}">
+        All Works
+      </a>
+      {% for cat_val, cat_label in categories %}
+        <a href="{% url 'gallery' %}?category={{ cat_val }}" class="filter-btn {% if active_category == cat_val %}active{% endif %}">
+          {{ cat_label }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="gallery-grid">
+      {% for item in gallery_items %}
+        <div class="gallery-card" 
+             data-img="{{ item.image_url }}" 
+             data-title="{{ item.title }}" 
+             data-category="{{ item.get_category_display }}" 
+             data-desc="{{ item.description }}">
+          <img src="{{ item.image_url }}" alt="{{ item.title }}" class="gallery-card-img"
+               onerror="this.src='https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=600&q=80'">
+          <div class="gallery-overlay">
+            <span class="gallery-overlay-cat">{{ item.get_category_display }}</span>
+            <h4 class="gallery-overlay-title">{{ item.title }}</h4>
+            <span class="gallery-overlay-btn">
+              <span>View High-Res & Info</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+          </div>
+        </div>
+      {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: var(--color-white); border-radius: var(--radius-md);">
+          <h3>No designs found in this category.</h3>
+          <p style="margin-top: 10px;"><a href="{% url 'gallery' %}" class="btn btn-outline btn-sm">View All Gallery</a></p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 60px;">
+      <p style="margin-bottom: 20px; font-size: 1.05rem; color: var(--color-henna-dark);">Found a design that speaks to your heart?</p>
+      <a href="{% url 'booking' %}" class="btn btn-primary">
+        Reserve This Look for Your Big Day
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="lightbox-modal" id="gallery-lightbox-modal">
+  <div class="lightbox-content">
+    <button type="button" class="lightbox-close" id="lightbox-close-btn">&times;</button>
+    <div class="lightbox-img-wrapper">
+      <img src="" alt="" id="lightbox-target-img" class="lightbox-img">
+    </div>
+    <div class="lightbox-info">
+      <span class="section-tag" id="lightbox-target-cat" style="align-self: flex-start;">Category</span>
+      <h3 id="lightbox-target-title" style="margin-bottom: 12px;">Design Title</h3>
+      <p id="lightbox-target-desc" style="margin-bottom: 24px; font-size: 0.92rem; color: var(--color-text-muted);">
+        Design description details...
+      </p>
+      
+      <div style="margin-top: auto;">
+        <a href="{% url 'booking' %}" id="lightbox-book-btn" class="btn btn-primary" style="width: 100%;">
+          Book Similar Design
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

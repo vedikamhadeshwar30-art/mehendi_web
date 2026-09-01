@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Aura Mehendi Artistry | Luxury Bridal & Contemporary Henna Studio{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Experience world-class bespoke Bridal and contemporary Mehendi artistry with 100% natural organic henna, rich mahogany stain guarantee, and seamless online booking.{% endblock %}">
+  
+  <!-- Google Fonts: Cormorant Garamond, Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{% static 'booking/css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Toast Notification Alerts -->
+  {% if messages %}
+    <div class="toast-container" id="toast-container">
+      {% for message in messages %}
+        <div class="toast-alert {{ message.tags }}">
+          <div class="toast-icon">
+            {% if message.tags == 'success' %}✨{% elif message.tags == 'error' %}⚠️{% else %}ℹ️{% endif %}
+          </div>
+          <div class="toast-msg">{{ message }}</div>
+          <button type="button" class="toast-close">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Header Navigation -->
+  <header class="header-navbar">
+    <div class="container nav-container">
+      <!-- Brand Logo -->
+      <a href="{% url 'home' %}" class="brand-logo">
+        <div class="brand-logo-icon">
+          <!-- Lotus / Henna Motif SVG -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C12 7 7 12 7 17a5 5 0 0 0 10 0c0-5-5-10-5-15z"/>
+            <path d="M12 9c2-2.5 5-3.5 7-2 1 2 0 5-2 7"/>
+            <path d="M12 9c-2-2.5-5-3.5-7-2-1 2 0 5 2 7"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Aura Mehendi</span>
+          <span class="brand-subtitle">Haute Henna Atelier</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <ul class="nav-links">
+        <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+        <li><a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About Artist</a></li>
+        <li><a href="{% url 'services' %}" class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}">Services & Pricing</a></li>
+        <li><a href="{% url 'gallery' %}" class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}">Gallery</a></li>
+        <li><a href="{% url 'home' %}#reviews" class="nav-link">Reviews</a></li>
+      </ul>
+
+      <!-- Action Buttons & User Menu -->
+      <div class="nav-actions">
+        {% if user.is_authenticated %}
+          <div class="user-dropdown">
+            <div class="user-btn">
+              <span class="user-avatar">{{ user.username|make_list|first|upper }}</span>
+              <span>{{ user.first_name|default:user.username }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <ul class="user-menu-list">
+              <li class="user-menu-item">
+                <a href="{% url 'my_bookings' %}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  My Appointments
+                </a>
+              </li>
+              {% if user.is_staff %}
+                <li class="user-menu-item">
+                  <a href="{% url 'admin:index' %}" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Admin Studio
+                  </a>
+                </li>
+              {% endif %}
+              <li class="user-menu-item">
+                <a href="{% url 'logout' %}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                  Log Out
+                </a>
+              </li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline btn-sm">Sign In</a>
+        {% endif %}
+
+        <a href="{% url 'booking' %}" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Book Appointment
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button type="button" class="mobile-toggle-btn" id="mobile-toggle-btn" aria-label="Toggle menu">
+          &#9776;
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="mobile-menu-drawer" id="mobile-menu-drawer">
+      <a href="{% url 'home' %}" class="mobile-nav-link">Home</a>
+      <a href="{% url 'about' %}" class="mobile-nav-link">About Artist</a>
+      <a href="{% url 'services' %}" class="mobile-nav-link">Services & Pricing</a>
+      <a href="{% url 'gallery' %}" class="mobile-nav-link">Design Gallery</a>
+      <a href="{% url 'home' %}#reviews" class="mobile-nav-link">Client Reviews</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'my_bookings' %}" class="mobile-nav-link">My Appointments</a>
+        <a href="{% url 'logout' %}" class="mobile-nav-link">Logout ({{ user.username }})</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="mobile-nav-link">Customer Login</a>
+        <a href="{% url 'register' %}" class="mobile-nav-link">Create Account</a>
+      {% endif %}
+      <a href="{% url 'booking' %}" class="btn btn-primary" style="margin-top: 10px;">Reserve a Slot Now</a>
+    </div>
+  </header>
+
+  <!-- Main Dynamic Page Content -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Luxury Master Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-col">
+          <div class="brand-logo" style="margin-bottom: 18px;">
+            <div class="brand-logo-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C12 7 7 12 7 17a5 5 0 0 0 10 0c0-5-5-10-5-15z"/></svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-title" style="color: #fff;">Aura Mehendi</span>
+              <span class="brand-subtitle" style="color: var(--color-gold-light);">Artisan Bridal Studio</span>
+            </div>
+          </div>
+          <p>
+            Crafting exquisite, timeless bridal motifs, intricate Rajasthani heritage designs, and modern Indo-Western henna art. Handcrafted using 100% natural Rajasthani triple-filtered henna leaves and premium essential oils.
+          </p>
+          <div class="social-links">
+            <a href="https://instagram.com" target="_blank" class="social-btn" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a href="https://wa.me/919876543210" target="_blank" class="social-btn" aria-label="WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </a>
+            <a href="https://pinterest.com" target="_blank" class="social-btn" aria-label="Pinterest">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 20l4-9"/><path d="M10.5 13c1.5 0 3.5-.5 3.5-3s-1.5-3-3.5-3c-3 0-4.5 2-4.5 4.5 0 1.5.8 2.5 1.5 2.5"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation -->
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About Artist & Craft</a></li>
+            <li><a href="{% url 'services' %}">Bridal & Party Packages</a></li>
+            <li><a href="{% url 'gallery' %}">Mehendi Gallery</a></li>
+            <li><a href="{% url 'booking' %}">Check Slot Availability</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Services -->
+        <div class="footer-col">
+          <h4>Our Specialities</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'services' %}?category=bridal">Royal Bridal Mehendi</a></li>
+            <li><a href="{% url 'services' %}?category=arabic">Contemporary Arabic</a></li>
+            <li><a href="{% url 'services' %}?category=mandala">Minimalist Mandala</a></li>
+            <li><a href="{% url 'services' %}?category=traditional">Rajasthani Marwari Art</a></li>
+            <li><a href="{% url 'services' %}?category=party">Sangeet & Family Guest Henna</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Studio Contact -->
+        <div class="footer-col">
+          <h4>Studio & Bookings</h4>
+          <p>
+            <strong>Location:</strong> Luxury Studio, Bandra West, Mumbai, Maharashtra 400050<br>
+            <strong>Hours:</strong> Mon - Sun: 09:00 AM – 09:30 PM<br>
+            <strong>Direct Inquiries:</strong> +91 98765 43210<br>
+            <strong>Email:</strong> bookings@auramehendi.com
+          </p>
+          <a href="{% url 'booking' %}" class="btn btn-gold btn-sm" style="width: 100%; text-align: center;">Book Your Date</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Aura Mehendi Artistry. All Rights Reserved. Crafted for brides with love.</div>
+        <div style="display:flex; gap: 16px;">
+          <span>100% Herbal Rajasthani Sojat Henna Guarantee</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Master JavaScript -->
+  <script src="{% static 'booking/js/script.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

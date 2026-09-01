@@ -1,0 +1,83 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Payment — #{{ payment.booking.booking_ref }}{% endblock %}
+{% block page_title %}Payment Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Payment — #{{ payment.booking.booking_ref }}</h1>
+    <p>{{ payment.booking.customer_name }} &bull; {{ payment.booking.service.title }}</p>
+  </div>
+  <a href="{% url 'panel:payments_list' %}" class="btn-admin btn-admin-outline">&larr; Back to Payments</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;">
+
+  <!-- Payment Summary -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Payment Summary</span>
+      <span class="status-pill status-{{ payment.payment_status }}">{{ payment.get_payment_status_display }}</span>
+    </div>
+    <div class="card-body">
+      <!-- Progress bar -->
+      {% if payment.total_amount > 0 %}
+        {% widthratio payment.advance_paid payment.total_amount 100 as pct %}
+        <div style="margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.85rem;">
+            <span style="color:var(--text-muted);">Payment Progress</span>
+            <strong>{{ pct }}% Paid</strong>
+          </div>
+          <div style="height:10px;background:#f0ebe4;border-radius:99px;overflow:hidden;">
+            <div style="width:{{ pct }}%;height:100%;background:linear-gradient(90deg,var(--henna),var(--gold));border-radius:99px;transition:width 0.5s;"></div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center;">
+        <div style="padding:18px;background:#f6f2ee;border-radius:12px;">
+          <div style="font-size:1.4rem;font-weight:800;color:var(--henna-dark);">₹{{ payment.total_amount|floatformat:0 }}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:4px;">Total Amount</div>
+        </div>
+        <div style="padding:18px;background:#f0fdf4;border-radius:12px;">
+          <div style="font-size:1.4rem;font-weight:800;color:#16a34a;">₹{{ payment.advance_paid|floatformat:0 }}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:4px;">Advance Paid</div>
+        </div>
+        <div style="padding:18px;background:#fef2f2;border-radius:12px;">
+          <div style="font-size:1.4rem;font-weight:800;color:var(--henna);">₹{{ payment.remaining_amount|floatformat:0 }}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:4px;">Remaining</div>
+        </div>
+      </div>
+
+      {% if payment.notes %}
+        <div style="margin-top:18px;padding:14px;background:#f6f2ee;border-radius:10px;font-size:0.88rem;color:var(--text-muted);">
+          <strong style="color:var(--text-main);">Notes:</strong> {{ payment.notes }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Update Payment Form -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">Update Payment</span></div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="admin-form-group">
+          <label class="admin-form-label">Advance Received (₹)</label>
+          <input type="number" name="advance_paid" class="admin-form-control"
+                 value="{{ payment.advance_paid }}" min="0" max="{{ payment.total_amount }}" step="50">
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-top:5px;">
+            Total: ₹{{ payment.total_amount|floatformat:0 }}
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Notes</label>
+          <textarea name="notes" rows="3" class="admin-form-control" placeholder="e.g. ₹2000 via UPI on 15 Aug...">{{ payment.notes }}</textarea>
+        </div>
+        <button type="submit" class="btn-admin btn-admin-primary" style="width:100%;">Save Payment</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

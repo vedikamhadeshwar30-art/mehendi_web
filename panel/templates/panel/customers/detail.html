@@ -1,0 +1,106 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}{{ customer.get_full_name|default:customer.username }}{% endblock %}
+{% block page_title %}Customer Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>{{ customer.get_full_name|default:customer.username }}</h1>
+    <p>@{{ customer.username }} &bull; Joined {{ customer.date_joined|date:"M d, Y" }}</p>
+  </div>
+  <a href="{% url 'panel:customers_list' %}" class="btn-admin btn-admin-outline">&larr; Back</a>
+</div>
+
+<div style="display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;">
+
+  <!-- Profile Card -->
+  <div style="display:flex;flex-direction:column;gap:18px;">
+    <div class="card">
+      <div class="card-body" style="text-align:center;padding:30px 20px;">
+        <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--henna),var(--henna-dark));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;margin:0 auto 14px;">
+          {{ customer.first_name|default:customer.username|make_list|first|upper }}
+        </div>
+        <h3 style="font-family:var(--serif);font-size:1.2rem;color:var(--henna-dark);">{{ customer.get_full_name|default:customer.username }}</h3>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-top:4px;">{{ customer.email }}</p>
+        {% if customer.is_active %}
+          <span class="status-pill" style="background:#f0fdf4;color:#16a34a;margin-top:12px;">Active</span>
+        {% else %}
+          <span class="status-pill" style="background:#fef2f2;color:#dc2626;margin-top:12px;">Disabled</span>
+        {% endif %}
+      </div>
+      <div style="border-top:1px solid var(--border);padding:16px 20px;">
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="toggle_active">
+          <button type="submit" class="btn-admin {% if customer.is_active %}btn-admin-danger{% else %}btn-admin-success{% endif %}" style="width:100%;">
+            {% if customer.is_active %}Disable Account{% else %}Enable Account{% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <span style="color:var(--text-muted);font-size:0.85rem;">Total Bookings</span>
+          <strong style="color:var(--henna);">{{ bookings.count }}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <span style="color:var(--text-muted);font-size:0.85rem;">Completed</span>
+          <strong style="color:#16a34a;">{{ bookings|length }}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);font-size:0.85rem;">Reviews Given</span>
+          <strong style="color:var(--gold);">{{ reviews.count }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking History + Reviews -->
+  <div style="display:flex;flex-direction:column;gap:20px;">
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Booking History</span></div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Ref</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for b in bookings %}
+              <tr>
+                <td><strong style="color:var(--henna);font-family:monospace;">#{{ b.booking_ref }}</strong></td>
+                <td style="font-size:0.88rem;">{{ b.service.title|truncatechars:28 }}</td>
+                <td style="font-size:0.83rem;">{{ b.booking_date|date:"M d, Y" }}</td>
+                <td style="font-weight:600;">₹{{ b.total_price|floatformat:0 }}</td>
+                <td><span class="status-pill status-{{ b.status }}">{{ b.get_status_display }}</span></td>
+                <td><a href="{% url 'panel:booking_detail' b.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">View</a></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">No bookings yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% if reviews %}
+    <div class="card">
+      <div class="card-header"><span class="card-title">Reviews</span></div>
+      {% for r in reviews %}
+        <div style="padding:16px 22px;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <strong style="font-size:0.9rem;">{{ r.service_taken }}</strong>
+            <div style="color:var(--gold);">{{ r.rating }}/5 ★</div>
+          </div>
+          <p style="font-size:0.88rem;color:var(--text-muted);">{{ r.comment }}</p>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">{{ r.created_at|date:"M d, Y" }} &bull; {% if r.is_approved %}✅ Approved{% else %}⏳ Pending{% endif %}</div>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

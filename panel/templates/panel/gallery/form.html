@@ -1,0 +1,77 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}{% if item %}Edit Gallery Item{% else %}Upload Design{% endif %}{% endblock %}
+{% block page_title %}{% if item %}Edit Gallery Item{% else %}Upload Design{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>{% if item %}Edit: {{ item.title }}{% else %}Upload New Design{% endif %}</h1>
+  </div>
+  <a href="{% url 'panel:gallery_list' %}" class="btn-admin btn-admin-outline">&larr; Back to Gallery</a>
+</div>
+
+<div style="max-width:700px;">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Design Details</span></div>
+      <div class="card-body">
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Title *</label>
+            <input type="text" name="title" class="admin-form-control" value="{{ item.title|default:'' }}" required placeholder="e.g. Bridal Elbow Mandala">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Category *</label>
+            <select name="category" class="admin-form-select">
+              {% for val, label in category_choices %}
+                <option value="{{ val }}" {% if item.category == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Description</label>
+          <textarea name="description" rows="3" class="admin-form-control" placeholder="Brief description of the design...">{{ item.description|default:'' }}</textarea>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Tags (comma-separated)</label>
+          <input type="text" name="tags" class="admin-form-control" value="{{ item.tags|default:'' }}" placeholder="e.g. Dark Stain, Bridal, Eucalyptus Oil">
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+          <input type="checkbox" name="is_featured" {% if item.is_featured %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--gold);">
+          Featured in Gallery (shown at top)
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Image</span></div>
+      <div class="card-body">
+        {% if item and item.image %}
+          <img src="{{ item.image.url }}" style="width:200px;height:160px;object-fit:cover;border-radius:10px;margin-bottom:14px;display:block;" alt="Current image">
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;">Current image shown above. Upload a new one to replace it.</p>
+        {% elif item and item.image_url %}
+          <img src="{{ item.image_url }}" style="width:200px;height:160px;object-fit:cover;border-radius:10px;margin-bottom:14px;display:block;" alt="Current image">
+        {% endif %}
+        <div class="admin-form-group">
+          <label class="admin-form-label">Upload Image File</label>
+          <input type="file" name="image" class="admin-form-control" accept="image/*">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Or Paste Image URL</label>
+          <input type="text" name="image_url" class="admin-form-control" value="{{ item.image_url|default:'' }}" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <button type="submit" class="btn-admin btn-admin-primary">
+        {% if item %}Save Changes{% else %}Upload Design{% endif %}
+      </button>
+      <a href="{% url 'panel:gallery_list' %}" class="btn-admin btn-admin-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

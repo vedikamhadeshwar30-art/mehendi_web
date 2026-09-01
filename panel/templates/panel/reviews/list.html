@@ -1,0 +1,74 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Reviews{% endblock %}
+{% block page_title %}Review Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Client Reviews</h1>
+    <p>Moderate and manage all customer feedback</p>
+  </div>
+</div>
+
+<!-- Filter Tabs -->
+<div style="display:flex;gap:8px;margin-bottom:20px;">
+  <a href="{% url 'panel:reviews_list' %}" class="btn-admin btn-admin-sm {% if filter_type == 'all' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">All Reviews</a>
+  <a href="?filter=pending" class="btn-admin btn-admin-sm {% if filter_type == 'pending' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Pending Approval</a>
+  <a href="?filter=approved" class="btn-admin btn-admin-sm {% if filter_type == 'approved' %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">Approved</a>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;">
+  {% for review in reviews %}
+    <div class="card" style="border-left:4px solid {% if review.is_approved %}#16a34a{% else %}#f59e0b{% endif %};">
+      <div class="card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+              <strong style="font-size:0.95rem;color:var(--henna-dark);">{{ review.client_name }}</strong>
+              <span style="color:var(--text-muted);font-size:0.82rem;">{{ review.client_location }}</span>
+              <div style="color:var(--gold);font-size:0.95rem;">
+                {% for i in "12345" %}{% if forloop.counter <= review.rating %}⭐{% endif %}{% endfor %}
+                <span style="color:var(--text-muted);font-size:0.78rem;">{{ review.rating }}/5</span>
+              </div>
+              {% if review.is_approved %}
+                <span class="status-pill" style="background:#f0fdf4;color:#16a34a;">Approved</span>
+              {% else %}
+                <span class="status-pill" style="background:#fffbeb;color:#d97706;">Pending</span>
+              {% endif %}
+            </div>
+
+            <p style="font-size:0.92rem;line-height:1.65;color:var(--text-main);">"{{ review.comment }}"</p>
+
+            {% if review.service_taken %}
+              <div style="margin-top:8px;font-size:0.8rem;color:var(--text-muted);">
+                Service: <strong>{{ review.service_taken.title }}</strong>
+              </div>
+            {% endif %}
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">
+              Submitted: {{ review.created_at|date:"M d, Y — h:i A" }}
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+            <form method="POST" action="{% url 'panel:review_approve' review.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-admin btn-admin-sm {% if review.is_approved %}btn-admin-outline{% else %}btn-admin-success{% endif %}" style="width:120px;">
+                {% if review.is_approved %}Unapprove{% else %}✅ Approve{% endif %}
+              </button>
+            </form>
+            <form method="POST" action="{% url 'panel:review_delete' review.pk %}" onsubmit="return confirm('Delete this review permanently?')">
+              {% csrf_token %}
+              <button type="submit" class="btn-admin btn-admin-danger btn-admin-sm" style="width:120px;">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div style="text-align:center;padding:60px;color:var(--text-muted);">
+      <div style="font-size:2.5rem;margin-bottom:12px;">⭐</div>
+      <h3>No Reviews Found</h3>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

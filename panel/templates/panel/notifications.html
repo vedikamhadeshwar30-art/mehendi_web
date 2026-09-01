@@ -1,0 +1,50 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Notifications</h1>
+    <p>Stay updated on new bookings, cancellations, and reviews</p>
+  </div>
+  {% if unread_count > 0 %}
+    <form method="POST" action="{% url 'panel:mark_notifications_read' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-admin btn-admin-outline">
+        Mark All Read ({{ unread_count }})
+      </button>
+    </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  {% for notif in notifications %}
+    <a href="{% url 'panel:notification_detail' notif.pk %}" class="notif-item {% if not notif.is_read %}unread{% endif %}" style="display:flex;">
+      <div class="notif-icon {{ notif.notif_type }}">
+        {% if notif.notif_type == 'new_booking' %}📅
+        {% elif notif.notif_type == 'cancellation' %}❌
+        {% elif notif.notif_type == 'review' %}⭐
+        {% else %}🔔{% endif %}
+      </div>
+      <div style="flex:1;">
+        <div class="notif-title">
+          {{ notif.title }}
+          {% if not notif.is_read %}<span style="background:#ef4444;color:#fff;font-size:0.65rem;padding:2px 7px;border-radius:99px;margin-left:6px;vertical-align:middle;">New</span>{% endif %}
+        </div>
+        <div class="notif-msg">{{ notif.message }}</div>
+        <div class="notif-time">{{ notif.created_at|date:"M d, Y — h:i A" }}</div>
+      </div>
+      {% if notif.booking %}
+        <div style="align-self:center;color:var(--henna);font-size:0.8rem;font-weight:600;">View Booking &rarr;</div>
+      {% endif %}
+    </a>
+  {% empty %}
+    <div style="padding:60px;text-align:center;color:var(--text-muted);">
+      <div style="font-size:2.5rem;margin-bottom:12px;">🔔</div>
+      <h3 style="margin-bottom:8px;">All Caught Up!</h3>
+      <p style="font-size:0.9rem;">No notifications at this time.</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

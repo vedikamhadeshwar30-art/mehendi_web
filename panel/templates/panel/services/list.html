@@ -1,0 +1,66 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Services{% endblock %}
+{% block page_title %}Service Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Services</h1>
+    <p>{{ services.count }} service{{ services.count|pluralize }} — manage your henna menu</p>
+  </div>
+  <a href="{% url 'panel:service_add' %}" class="btn-admin btn-admin-primary">+ Add Service</a>
+</div>
+
+<div class="service-admin-grid">
+  {% for s in services %}
+    <div class="service-admin-card {% if not s.is_active %}inactive{% endif %}">
+      {% if s.image %}
+        <img src="{{ s.image.url }}" alt="{{ s.title }}" class="service-admin-img">
+      {% elif s.image_url %}
+        <img src="{{ s.image_url }}" alt="{{ s.title }}" class="service-admin-img" onerror="this.src='https://images.unsplash.com/photo-1583991384017-11a94e31f32e?w=400'">
+      {% else %}
+        <div class="service-admin-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">🪷</div>
+      {% endif %}
+
+      <div class="service-admin-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+          <div class="service-admin-name">{{ s.title }}</div>
+          {% if not s.is_active %}
+            <span style="background:#f5f5f5;color:#9ca3af;font-size:0.7rem;padding:3px 8px;border-radius:99px;font-weight:700;white-space:nowrap;">Inactive</span>
+          {% elif s.is_featured %}
+            <span style="background:rgba(212,175,55,0.15);color:var(--gold);font-size:0.7rem;padding:3px 8px;border-radius:99px;font-weight:700;">Featured</span>
+          {% endif %}
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">{{ s.get_category_display }}</div>
+        <div class="service-admin-price">₹{{ s.price|floatformat:0 }}</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;">{{ s.duration_hours }} hrs</div>
+        {% if s.badge %}
+          <div style="margin-top:8px;background:rgba(104,35,22,0.08);color:var(--henna);font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:99px;display:inline-block;">{{ s.badge }}</div>
+        {% endif %}
+      </div>
+
+      <div class="gallery-admin-actions" style="justify-content:space-between;flex-wrap:wrap;">
+        <a href="{% url 'panel:service_edit' s.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">Edit</a>
+
+        <form method="POST" action="{% url 'panel:service_toggle' s.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-admin btn-admin-sm {% if s.is_active %}btn-admin-outline{% else %}btn-admin-success{% endif %}">
+            {% if s.is_active %}Deactivate{% else %}Activate{% endif %}
+          </button>
+        </form>
+
+        <form method="POST" action="{% url 'panel:service_delete' s.pk %}" onsubmit="return confirm('Delete this service? This cannot be undone.')">
+          {% csrf_token %}
+          <button type="submit" class="btn-admin btn-admin-danger btn-admin-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+  {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);">
+      <div style="font-size:2.5rem;margin-bottom:12px;">🪷</div>
+      <h3>No Services Yet</h3>
+      <a href="{% url 'panel:service_add' %}" class="btn-admin btn-admin-primary" style="margin-top:16px;">Add First Service</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

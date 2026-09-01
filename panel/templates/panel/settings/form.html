@@ -1,0 +1,92 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Business Settings{% endblock %}
+{% block page_title %}Business Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Business Settings</h1>
+    <p>Studio contact info, hours, and about section</p>
+  </div>
+</div>
+
+<div style="max-width:800px;">
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Studio Identity</span></div>
+      <div class="card-body">
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Business Name</label>
+            <input type="text" name="business_name" class="admin-form-control" value="{{ settings.business_name }}">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Tagline</label>
+            <input type="text" name="tagline" class="admin-form-control" value="{{ settings.tagline }}">
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">About the Studio</label>
+          <textarea name="about" rows="4" class="admin-form-control">{{ settings.about }}</textarea>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Studio Address</label>
+          <textarea name="address" rows="2" class="admin-form-control">{{ settings.address }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Contact Details</span></div>
+      <div class="card-body">
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Phone</label>
+            <input type="text" name="phone" class="admin-form-control" value="{{ settings.phone }}">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">WhatsApp Number</label>
+            <input type="text" name="whatsapp" class="admin-form-control" value="{{ settings.whatsapp }}" placeholder="+919876543210">
+          </div>
+        </div>
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Email</label>
+            <input type="email" name="email" class="admin-form-control" value="{{ settings.email }}">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Instagram Handle</label>
+            <input type="text" name="instagram" class="admin-form-control" value="{{ settings.instagram }}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header"><span class="card-title">Operating Hours</span></div>
+      <div class="card-body">
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Monday – Friday</label>
+            <input type="text" name="mon_fri_hours" class="admin-form-control" value="{{ settings.mon_fri_hours }}">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Saturday</label>
+            <input type="text" name="sat_hours" class="admin-form-control" value="{{ settings.sat_hours }}">
+          </div>
+        </div>
+        <div style="max-width:48%;">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Sunday</label>
+            <input type="text" name="sun_hours" class="admin-form-control" value="{{ settings.sun_hours }}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-admin btn-admin-primary">Save All Settings</button>
+  </form>
+</div>
+{% endblock %}

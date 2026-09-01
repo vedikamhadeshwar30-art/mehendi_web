@@ -1,0 +1,57 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Sign In | Aura Mehendi Artistry{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+  <div class="container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-logo-icon" style="margin: 0 auto 16px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C12 7 7 12 7 17a5 5 0 0 0 10 0c0-5-5-10-5-15z"/></svg>
+        </div>
+        <span class="section-tag" style="margin-bottom: 8px;">Welcome Back</span>
+        <h2 style="font-size: 1.8rem; margin-bottom: 6px;">Sign In to Your Account</h2>
+        <p style="font-size: 0.88rem; color: var(--color-text-muted);">Access your appointments, saved preferences, and booking receipts.</p>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+          <div style="background: #ffebee; color: #c62828; padding: 12px; border-radius: var(--radius-md); margin-bottom: 18px; font-size: 0.88rem;">
+            {% for error in form.non_field_errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label class="form-label" for="id_username">Username</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div style="color: #c62828; font-size: 0.82rem; margin-top: 4px;">{{ form.username.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_password">Password</label>
+          {{ form.password }}
+          {% if form.password.errors %}
+            <div style="color: #c62828; font-size: 0.82rem; margin-top: 4px;">{{ form.password.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+          Sign In
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Don't have an account yet? <a href="{% url 'register' %}" style="font-weight: 700;">Create Account</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

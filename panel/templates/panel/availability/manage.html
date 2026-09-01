@@ -1,0 +1,94 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Availability Management{% endblock %}
+{% block page_title %}Availability Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Slot Availability</h1>
+    <p>Manage available and blocked time slots for artist bookings</p>
+  </div>
+</div>
+
+<!-- 14-day date navigator -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
+  <span style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Navigate:</span>
+  {% for day in calendar_days %}
+    <a href="?date={{ day|date:'Y-m-d' }}"
+       class="btn-admin btn-admin-sm {% if day == view_date %}btn-admin-gold{% else %}btn-admin-outline{% endif %}"
+       style="flex-shrink:0;">
+      <div style="text-align:center;line-height:1.2;">
+        <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;">{{ day|date:"D" }}</div>
+        <div style="font-weight:800;">{{ day|date:"d" }}</div>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+<!-- Selected Date Header -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <span class="card-title" style="font-size:1.2rem;">
+      📅 {{ view_date|date:"l, F d, Y" }}
+    </span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span style="font-size:0.8rem;color:var(--text-muted);">Legend:</span>
+      <span class="slot-state-pill slot-available">Available</span>
+      <span class="slot-state-pill slot-booked">Booked</span>
+      <span class="slot-state-pill slot-blocked">Blocked</span>
+    </div>
+  </div>
+
+  <!-- Slot Grid -->
+  {% for slot in slot_grid %}
+    <div class="slot-grid-row">
+      <div>
+        <div class="slot-time-label">{{ slot.value }}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);">{{ slot.label|truncatechars:35 }}</div>
+      </div>
+
+      <div>
+        {% if slot.is_booked %}
+          <span class="slot-state-pill slot-booked">🔵 Booked</span>
+          {% if slot.booking %}
+            <div style="font-size:0.8rem;margin-top:6px;">
+              <strong>{{ slot.booking.customer_name }}</strong> — {{ slot.booking.service.title|truncatechars:30 }}
+              <a href="{% url 'panel:booking_detail' slot.booking.pk %}" style="color:var(--henna);margin-left:8px;font-size:0.75rem;">View &rarr;</a>
+            </div>
+          {% endif %}
+        {% elif slot.is_blocked %}
+          <span class="slot-state-pill slot-blocked">🔴 Blocked</span>
+          {% if slot.block_reason %}
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">{{ slot.block_reason }}</div>
+          {% endif %}
+        {% else %}
+          <span class="slot-state-pill slot-available">✅ Available</span>
+        {% endif %}
+      </div>
+
+      <div>
+        {% if slot.is_booked %}
+          <span style="font-size:0.78rem;color:var(--text-muted);">Cannot block — has booking</span>
+        {% elif slot.is_blocked %}
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="unblock">
+            <input type="hidden" name="date" value="{{ view_date|date:'Y-m-d' }}">
+            <input type="hidden" name="time_slot" value="{{ slot.value }}">
+            <button type="submit" class="btn-admin btn-admin-success btn-admin-sm">Unblock</button>
+          </form>
+        {% else %}
+          <form method="POST" style="display:flex;gap:8px;align-items:center;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="block">
+            <input type="hidden" name="date" value="{{ view_date|date:'Y-m-d' }}">
+            <input type="hidden" name="time_slot" value="{{ slot.value }}">
+            <input type="text" name="reason" placeholder="Reason (optional)" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:0.82rem;font-family:var(--sans);outline:none;width:180px;">
+            <button type="submit" class="btn-admin btn-admin-danger btn-admin-sm">Block Slot</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

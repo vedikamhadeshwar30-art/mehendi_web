@@ -1,0 +1,222 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Studio Dashboard</h1>
+    <p>Overview of bookings, revenue, and studio activity</p>
+  </div>
+  <a href="{% url 'panel:bookings_list' %}" class="btn-admin btn-admin-primary">View All Bookings</a>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">📅</div>
+    <div>
+      <div class="stat-info-value">{{ stats.total_bookings }}</div>
+      <div class="stat-info-label">Total Bookings</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon orange">⏳</div>
+    <div>
+      <div class="stat-info-value">{{ stats.pending }}</div>
+      <div class="stat-info-label">Pending</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue">✅</div>
+    <div>
+      <div class="stat-info-value">{{ stats.confirmed }}</div>
+      <div class="stat-info-label">Confirmed</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon gold">📆</div>
+    <div>
+      <div class="stat-info-value">{{ stats.today }}</div>
+      <div class="stat-info-label">Today's Bookings</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green">🎉</div>
+    <div>
+      <div class="stat-info-value">{{ stats.completed }}</div>
+      <div class="stat-info-label">Completed</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red">❌</div>
+    <div>
+      <div class="stat-info-value">{{ stats.cancelled }}</div>
+      <div class="stat-info-label">Cancelled / Rejected</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon henna">👩</div>
+    <div>
+      <div class="stat-info-value">{{ stats.total_customers }}</div>
+      <div class="stat-info-label">Customers</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon teal">💰</div>
+    <div>
+      <div class="stat-info-value" style="font-size:1.5rem;">₹{{ stats.total_revenue|floatformat:0 }}</div>
+      <div class="stat-info-label">Total Revenue</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts + Recent Bookings Row -->
+<div style="display:grid;grid-template-columns:1.4fr 0.6fr;gap:20px;margin-bottom:24px;">
+
+  <!-- Bookings Trend Chart -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Bookings — Last 7 Days</span>
+    </div>
+    <div class="card-body" style="padding: 20px;">
+      <canvas id="bookingsTrendChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Notification Feed -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Alerts</span>
+      <a href="{% url 'panel:notifications' %}" style="font-size:0.8rem;color:var(--henna);font-weight:600;">See All</a>
+    </div>
+    {% for notif in notifications %}
+      <a href="{% url 'panel:notification_detail' notif.pk %}" class="notif-item {% if not notif.is_read %}unread{% endif %}">
+        <div class="notif-icon {{ notif.notif_type }}">
+          {% if notif.notif_type == 'new_booking' %}📅
+          {% elif notif.notif_type == 'cancellation' %}❌
+          {% elif notif.notif_type == 'review' %}⭐
+          {% else %}🔔{% endif %}
+        </div>
+        <div>
+          <div class="notif-title">{{ notif.title }}</div>
+          <div class="notif-msg">{{ notif.message|truncatechars:60 }}</div>
+          <div class="notif-time">{{ notif.created_at|timesince }} ago</div>
+        </div>
+      </a>
+    {% empty %}
+      <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.88rem;">No new notifications</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Revenue Chart -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header">
+    <span class="card-title">Monthly Revenue (Completed Bookings)</span>
+  </div>
+  <div class="card-body" style="padding:20px;">
+    <canvas id="revenueChart" height="80"></canvas>
+  </div>
+</div>
+
+<!-- Recent Bookings Table -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Recent Bookings</span>
+    <a href="{% url 'panel:bookings_list' %}" class="btn-admin btn-admin-outline btn-admin-sm">View All</a>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Ref</th>
+          <th>Customer</th>
+          <th>Service</th>
+          <th>Date & Time</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in recent_bookings %}
+          <tr>
+            <td><strong style="font-family:monospace;color:var(--henna);">#{{ b.booking_ref }}</strong></td>
+            <td>
+              <div style="font-weight:600;">{{ b.customer_name }}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">{{ b.customer_phone }}</div>
+            </td>
+            <td>{{ b.service.title|truncatechars:28 }}</td>
+            <td>
+              <div style="font-weight:600;">{{ b.booking_date|date:"M d, Y" }}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">{{ b.booking_time }}</div>
+            </td>
+            <td style="font-weight:700;color:var(--henna);">₹{{ b.total_price|floatformat:0 }}</td>
+            <td><span class="status-pill status-{{ b.status }}">{{ b.get_status_display }}</span></td>
+            <td>
+              <a href="{% url 'panel:booking_detail' b.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">Details</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const chartOpts = {
+  responsive: true,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+    y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 }, stepSize: 1 } }
+  }
+};
+
+new Chart(document.getElementById('bookingsTrendChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ chart_labels|safe }},
+    datasets: [{
+      data: {{ chart_data|safe }},
+      backgroundColor: 'rgba(104, 35, 22, 0.75)',
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: chartOpts
+});
+
+new Chart(document.getElementById('revenueChart'), {
+  type: 'line',
+  data: {
+    labels: {{ rev_labels|safe }},
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: {{ rev_data|safe }},
+      borderColor: '#d4af37',
+      backgroundColor: 'rgba(212, 175, 55, 0.12)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#d4af37',
+      pointRadius: 5,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: v => '₹' + v.toLocaleString('en-IN') } }
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Gallery{% endblock %}
+{% block page_title %}Gallery Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Gallery</h1>
+    <p>{{ items.count }} design{{ items.count|pluralize }} in the portfolio</p>
+  </div>
+  <a href="{% url 'panel:gallery_upload' %}" class="btn-admin btn-admin-primary">+ Upload Design</a>
+</div>
+
+<div class="gallery-admin-grid">
+  {% for item in items %}
+    <div class="gallery-admin-card">
+      <img src="{{ item.get_image }}" alt="{{ item.title }}" class="gallery-admin-img"
+           onerror="this.src='https://.unsplash.com/photo-1583991384017-11a94e31f32e?w=400'">
+      <div class="gallery-admin-body">
+        <div class="gallery-admin-title">{{ item.title }}</div>
+        <div class="gallery-admin-cat">{{ item.get_category_display }}</div>
+        {% if item.tags %}
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">{{ item.tags|truncatechars:40 }}</div>
+        {% endif %}images
+        {% if item.is_featured %}
+          <div style="margin-top:6px;display:inline-block;background:rgba(212,175,55,0.15);color:var(--gold);font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:99px;">⭐ Featured</div>
+        {% endif %}
+      </div>
+      <div class="gallery-admin-actions">
+        <a href="{% url 'panel:gallery_edit' item.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">Edit</a>
+        <form method="POST" action="{% url 'panel:gallery_delete' item.pk %}" onsubmit="return confirm('Delete this gallery item?')" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-admin btn-admin-danger btn-admin-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+  {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);">
+      <div style="font-size:2.5rem;margin-bottom:12px;">🖼️</div>
+      <h3>No Gallery Items</h3>
+      <a href="{% url 'panel:gallery_upload' %}" class="btn-admin btn-admin-primary" style="margin-top:16px;">Upload First Design</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

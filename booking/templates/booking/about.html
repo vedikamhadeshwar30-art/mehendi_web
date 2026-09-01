@@ -1,0 +1,138 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}About Master Artist Riya Verma | Aura Mehendi Artistry{% endblock %}
+{% block meta_description %}Learn about Riya Verma's 10+ year journey in luxury bridal mehendi, our pure organic Rajasthani henna guarantee, and our secret 4-step stain aftercare method.{% endblock %}
+
+{% block content %}
+<!-- About Hero -->
+<section class="about-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Haute Henna Atelier</span>
+      <h1 class="section-title">The Artistry & Soul of Aura Mehendi</h1>
+      <p class="section-desc">Honoring millennia of Indian bridal heritage through uncompromising craftsmanship, bespoke storytelling, and 100% pure botanical henna.</p>
+      <div class="motif-divider">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-gold-primary)"><path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z"/></svg>
+      </div>
+    </div>
+
+    <div class="about-grid" style="margin-bottom: 80px;">
+      <div style="position: relative;">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=80" 
+             alt="Riya Verma Master Henna Artist" 
+             style="border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); width: 100%; height: 500px; object-fit: cover;">
+        
+        <div class="floating-card" style="bottom: 30px; left: -15px;">
+          <div class="card-icon-badge">✨</div>
+          <div>
+            <div class="card-info-title">10+ Years of Craft</div>
+            <div class="card-info-sub">Mastering Rajasthani & Indo-Arabic Henna</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <span class="section-tag">Founder & Principal Artist</span>
+        <h2 style="margin-bottom: 18px;">Riya Verma</h2>
+        <h4 style="color: var(--color-terracotta); margin-bottom: 20px; font-family: var(--font-sans); font-weight: 600;">
+          Preserving Sacred Traditions, Redefining Modern Elegance
+        </h4>
+        <p style="margin-bottom: 16px;">
+          Born and raised in the cultural heart of Rajasthan and trained under legendary master artisans in Jaipur and Mumbai, Riya has spent over a decade perfecting the delicate, symphonic geometry of Mehendi.
+        </p>
+        <p style="margin-bottom: 16px;">
+          Her signature aesthetic marries the timeless grandeur of <strong>Marwari floral jaals, sacred hastamelap motifs, and royal peacock crests</strong> with the sleek fluidity of <strong>contemporary Indo-Western negative spacing</strong> and intricate mandala work.
+        </p>
+        <p style="margin-bottom: 24px;">
+          Every bridal composition is treated as a one-of-a-kind artwork, customized with bride & groom portraits, the couple’s milestone dates, beloved pet outlines, or personalized wedding vows hidden subtly within the swirls.
+        </p>
+
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+          <a href="{% url 'booking' %}" class="btn btn-primary">Schedule a Consultation</a>
+          <a href="{% url 'gallery' %}" class="btn btn-outline">View Bridal Portfolio</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Organic Henna Philosophy -->
+    <div style="background: var(--color-white); border-radius: var(--radius-lg); padding: 50px 40px; box-shadow: var(--shadow-md); border: 1px solid var(--color-border-gold); margin-bottom: 80px;">
+      <div class="section-header" style="margin-bottom: 36px;">
+        <span class="section-tag">Pure Botanical Purity</span>
+        <h2>Our 100% Organic Henna Promise</h2>
+        <p class="section-desc">We never use chemical cones, preservatives, or synthetic dyes (PPD). Your skin’s health and breathtaking stain depth are our highest priorities.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box" style="background: var(--color-cream-bg);">
+          <div class="feature-icon">🌿</div>
+          <div class="feature-content">
+            <h4>Triple-Sifted Sojat Leaves</h4>
+            <p>Sourced directly from the lush organic henna farms of Sojat, Rajasthan for velvety smooth application and rich lawson content.</p>
+          </div>
+        </div>
+
+        <div class="feature-box" style="background: var(--color-cream-bg);">
+          <div class="feature-icon">💧</div>
+          <div class="feature-content">
+            <h4>Pure Essential Oils</h4>
+            <p>Infused with therapeutic-grade eucalyptus, wild cajeput, and soothing lavender oils to naturally activate deep darkening.</p>
+          </div>
+        </div>
+
+        <div class="feature-box" style="background: var(--color-cream-bg);">
+          <div class="feature-icon">🛡️</div>
+          <div class="feature-content">
+            <h4>Zero PPD or Ammonia</h4>
+            <p>Completely safe for sensitive skin, mothers-to-be (Godh Bharai / Baby Showers), and brides with delicate complexions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4-Step Bridal Stain Aftercare Guide -->
+    <div style="margin-bottom: 60px;">
+      <div class="section-header">
+        <span class="section-tag">The Secret to Deep Mahogany</span>
+        <h2>4-Step Bridal Stain Care Ritual</h2>
+        <p class="section-desc">Follow our studio-tested aftercare guide to achieve an ultra-dark, rich burgundy stain that lasts for weeks.</p>
+      </div>
+
+      <div class="aftercare-step-grid">
+        <div class="aftercare-step-card">
+          <div class="step-num">01</div>
+          <h4 style="margin-bottom: 10px;">Natural Dry & Lemon-Sugar Seal</h4>
+          <p style="font-size: 0.9rem;">Allow mehendi to dry naturally for 45 minutes. Dab lightly with a warm lemon juice and cane sugar syrup to lock the paste firmly onto the skin.</p>
+        </div>
+
+        <div class="aftercare-step-card">
+          <div class="step-num">02</div>
+          <h4 style="margin-bottom: 10px;">Let Rest for 8-12 Hours</h4>
+          <p style="font-size: 0.9rem;">Keep the dried henna paste on overnight or for a minimum of 8 to 12 hours. Wrap hands in breathable cotton gauze to maintain natural body warmth.</p>
+        </div>
+
+        <div class="aftercare-step-card">
+          <div class="step-num">03</div>
+          <h4 style="margin-bottom: 10px;">Scrape with Mustard / Coconut Oil</h4>
+          <p style="font-size: 0.9rem;">Never wash with water! Gently scrape off dried crust using a blunt card and massage with warm mustard, coconut, or eucalyptus oil.</p>
+        </div>
+
+        <div class="aftercare-step-card">
+          <div class="step-num">04</div>
+          <h4 style="margin-bottom: 10px;">Clove Smoke & Avoid Water (24h)</h4>
+          <p style="font-size: 0.9rem;">Warm your hands over warm clove vapors (laung ki bhaap). Avoid water and soap contact for 24 hours to let the stain oxidize into deep mahogany.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Booking Call to Action -->
+    <div style="background: linear-gradient(135deg, var(--color-henna-dark) 0%, var(--color-henna-primary) 100%); border-radius: var(--radius-lg); padding: 50px 30px; text-align: center; color: #fff; box-shadow: var(--shadow-lg); border: 1.5px solid var(--color-gold-primary);">
+      <h2 style="color: var(--color-gold-light); margin-bottom: 14px;">Ready to Craft Your Bridal Dream?</h2>
+      <p style="max-width: 580px; margin: 0 auto 28px; color: #f5ede1;">
+        Due to high demand during the wedding season, we recommend reserving your date 3-6 months in advance.
+      </p>
+      <a href="{% url 'booking' %}" class="btn btn-gold">Check Live Available Slots</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

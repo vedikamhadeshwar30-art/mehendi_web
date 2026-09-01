@@ -1,0 +1,147 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Services & Pricing Packages | Aura Mehendi Artistry{% endblock %}
+{% block meta_description %}Explore our complete bridal, engagement, sangeet, and festive henna packages with transparent pricing, duration, and instant online reservation.{% endblock %}
+
+{% block content %}
+<section class="services-section" style="padding-top: 130px;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Couture Collections</span>
+      <h1 class="section-title">Mehendi Services & Packages</h1>
+      <p class="section-desc">Transparent pricing and bespoke packages tailored for royal brides, intimate ceremonies, and festive celebrations.</p>
+      <div class="motif-divider">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-gold-primary)"><path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z"/></svg>
+      </div>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="filter-container">
+      <a href="{% url 'services' %}?category=all" class="filter-btn {% if active_category == 'all' or not active_category %}active{% endif %}">
+        All Packages
+      </a>
+      {% for cat_val, cat_label in categories %}
+        <a href="{% url 'services' %}?category={{ cat_val }}" class="filter-btn {% if active_category == cat_val %}active{% endif %}">
+          {{ cat_label }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Services Grid -->
+    <div class="services-grid">
+      {% for service in services %}
+        <div class="service-card {% if service.is_featured %}featured-card{% endif %}">
+          {% if service.badge %}
+            <span class="service-badge">{{ service.badge }}</span>
+          {% endif %}
+          
+          <div class="service-img-container">
+            <img src="{{ service.image_url }}" alt="{{ service.title }}" class="service-img"
+                 onerror="this.src='https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=600&q=80'">
+          </div>
+
+          <div class="service-body">
+            <div class="service-header">
+              <h3 class="service-title">{{ service.title }}</h3>
+              <div class="service-price">₹{{ service.price|floatformat:0 }}</div>
+            </div>
+
+            <div class="service-meta">
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ service.duration_hours }} Hours
+              </span>
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                {{ service.get_category_display }}
+              </span>
+            </div>
+
+            {% if service.tagline %}
+              <div style="font-weight: 600; color: var(--color-terracotta); font-size: 0.88rem; margin-bottom: 8px;">
+                {{ service.tagline }}
+              </div>
+            {% endif %}
+
+            <p class="service-desc">{{ service.description }}</p>
+
+            <ul class="service-features">
+              {% for feature in service.get_features %}
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {{ feature }}
+                </li>
+              {% endfor %}
+            </ul>
+
+            <div class="service-footer">
+              <a href="{% url 'booking' %}?service={{ service.id }}" class="btn btn-primary" style="width: 100%;">
+                Book This Package
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: var(--color-white); border-radius: var(--radius-md);">
+          <h3>No services found in this category.</h3>
+          <p style="margin-top: 10px;"><a href="{% url 'services' %}" class="btn btn-outline btn-sm">View All Packages</a></p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Package Inclusions Banner -->
+    <div style="margin-top: 80px; background: var(--color-white); border-radius: var(--radius-lg); padding: 40px; border: 1px solid var(--color-border-gold); box-shadow: var(--shadow-sm);">
+      <h3 style="text-align: center; margin-bottom: 24px;">Every Aura Booking Includes Complimentary:</h3>
+      <div class="features-grid">
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="color: var(--color-gold-primary); font-size: 1.3rem;">🌿</div>
+          <div>
+            <div style="font-weight: 700; color: var(--color-henna-dark);">Organic Rajasthani Cones</div>
+            <div style="font-size: 0.85rem; color: var(--color-text-muted);">Freshly prepared 24 hours before your session for maximum pigment.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="color: var(--color-gold-primary); font-size: 1.3rem;">🍯</div>
+          <div>
+            <div style="font-weight: 700; color: var(--color-henna-dark);">Lemon-Sugar Sealant Spray</div>
+            <div style="font-size: 0.85rem; color: var(--color-text-muted);">Crafted with rose water to nourish skin and bond paste tightly.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="color: var(--color-gold-primary); font-size: 1.3rem;">🧴</div>
+          <div>
+            <div style="font-weight: 700; color: var(--color-henna-dark);">Botanical Stain Aftercare Balm</div>
+            <div style="font-size: 0.85rem; color: var(--color-text-muted);">Infused with shea butter and eucalyptus to waterproof the stain.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div style="margin-top: 80px; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <div class="section-header">
+        <span class="section-tag">Frequently Asked Questions</span>
+        <h2>Everything You Need to Know</h2>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: var(--color-white); border-radius: var(--radius-md); padding: 22px; border: 1px solid var(--color-border-subtle);">
+          <h4 style="margin-bottom: 8px; color: var(--color-henna-dark);">How early should I book my bridal mehendi?</h4>
+          <p style="font-size: 0.92rem;">We recommend booking 3 to 6 months in advance for prime wedding season dates (October to March). For intimate ceremonies or party guest bookings, 2 to 4 weeks advance notice is advised.</p>
+        </div>
+
+        <div style="background: var(--color-white); border-radius: var(--radius-md); padding: 22px; border: 1px solid var(--color-border-subtle);">
+          <h4 style="margin-bottom: 8px; color: var(--color-henna-dark);">Do you travel to home / wedding venue locations?</h4>
+          <p style="font-size: 0.92rem;">Yes! We provide home visits across Mumbai and destination wedding setups worldwide. You can select "Client Venue / Home Visit" during online booking.</p>
+        </div>
+
+        <div style="background: var(--color-white); border-radius: var(--radius-md); padding: 22px; border: 1px solid var(--color-border-subtle);">
+          <h4 style="margin-bottom: 8px; color: var(--color-henna-dark);">When is the best time to apply bridal mehendi before the wedding?</h4>
+          <p style="font-size: 0.92rem;">Natural henna reaches peak rich burgundy stain 48 hours after application. We recommend applying mehendi 2 days prior to your primary wedding ceremony or reception.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

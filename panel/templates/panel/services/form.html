@@ -1,0 +1,113 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}{% if service %}Edit Service{% else %}Add Service{% endif %}{% endblock %}
+{% block page_title %}{% if service %}Edit Service{% else %}Add New Service{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>{% if service %}Edit: {{ service.title }}{% else %}Add New Service{% endif %}</h1>
+    <p>Fill in the details below for this henna service offering</p>
+  </div>
+  <a href="{% url 'panel:services_list' %}" class="btn-admin btn-admin-outline">&larr; Back</a>
+</div>
+
+<div style="max-width:800px;">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Basic Information</span></div>
+      <div class="card-body">
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Service Name *</label>
+            <input type="text" name="title" class="admin-form-control" value="{{ service.title|default:'' }}" required placeholder="e.g. Bridal Signature Mehendi">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Category *</label>
+            <select name="category" class="admin-form-select">
+              {% for val, label in category_choices %}
+                <option value="{{ val }}" {% if service.category == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Tagline</label>
+          <input type="text" name="tagline" class="admin-form-control" value="{{ service.tagline|default:'' }}" placeholder="e.g. Elaborate elbow-length bridal intricacy">
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Description *</label>
+          <textarea name="description" rows="4" class="admin-form-control" placeholder="Full description of the service...">{{ service.description|default:'' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Pricing & Duration</span></div>
+      <div class="card-body">
+        <div class="admin-form-row">
+          <div class="admin-form-group">
+            <label class="admin-form-label">Price (₹) *</label>
+            <input type="number" name="price" class="admin-form-control" value="{{ service.price|default:'' }}" min="0" step="50" required>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Duration (Hours)</label>
+            <input type="number" name="duration_hours" class="admin-form-control" value="{{ service.duration_hours|default:'2.0' }}" min="0.5" max="12" step="0.5">
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Badge Text</label>
+          <input type="text" name="badge" class="admin-form-control" value="{{ service.badge|default:'' }}" placeholder="e.g. Most Popular, Bridal Signature">
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Image</span></div>
+      <div class="card-body">
+        {% if service.image %}
+          <img src="{{ service.image.url }}" style="width:200px;height:140px;object-fit:cover;border-radius:10px;margin-bottom:14px;display:block;">
+        {% endif %}
+        <div class="admin-form-group">
+          <label class="admin-form-label">Upload Image</label>
+          <input type="file" name="image" class="admin-form-control" accept="image/*">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">Or Image URL</label>
+          <input type="text" name="image_url" class="admin-form-control" value="{{ service.image_url|default:'' }}" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><span class="card-title">Features & Settings</span></div>
+      <div class="card-body">
+        <div class="admin-form-group">
+          <label class="admin-form-label">Features (one per line or comma-separated)</label>
+          <textarea name="features_list" rows="5" class="admin-form-control" placeholder="Full bridal hands up to elbow&#10;Customised design consultations&#10;Dark stain guarantee">{{ service.features_list|default:'' }}</textarea>
+        </div>
+        <div style="display:flex;gap:24px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+            <input type="checkbox" name="is_featured" {% if service.is_featured %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--gold);">
+            Featured Service
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+            <input type="checkbox" name="is_active" {% if not service or service.is_active %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--henna);">
+            Active (visible to customers)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <button type="submit" class="btn-admin btn-admin-primary">
+        {% if service %}Save Changes{% else %}Create Service{% endif %}
+      </button>
+      <a href="{% url 'panel:services_list' %}" class="btn-admin btn-admin-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

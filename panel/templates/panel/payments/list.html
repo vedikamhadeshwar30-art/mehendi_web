@@ -1,0 +1,80 @@
+{% extends 'panel/base_admin.html' %}
+{% block title %}Payments{% endblock %}
+{% block page_title %}Payment Records{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Payments</h1>
+    <p>Track advance payments and outstanding balances</p>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+  <div class="stat-card">
+    <div class="stat-icon green">💰</div>
+    <div>
+      <div class="stat-info-value" style="font-size:1.4rem;">₹{{ total_revenue|floatformat:0 }}</div>
+      <div class="stat-info-label">Fully Paid (Completed)</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon gold">📥</div>
+    <div>
+      <div class="stat-info-value" style="font-size:1.4rem;">₹{{ total_advance|floatformat:0 }}</div>
+      <div class="stat-info-label">Total Advance Collected</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter -->
+<div style="display:flex;gap:8px;margin-bottom:20px;">
+  <a href="{% url 'panel:payments_list' %}" class="btn-admin btn-admin-sm {% if not status_filter %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">All</a>
+  {% for val, label in payment_statuses %}
+    <a href="?status={{ val }}" class="btn-admin btn-admin-sm {% if status_filter == val %}btn-admin-gold{% else %}btn-admin-outline{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Booking Ref</th>
+          <th>Customer</th>
+          <th>Service</th>
+          <th>Total</th>
+          <th>Advance</th>
+          <th>Remaining</th>
+          <th>Payment Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pmt in payments %}
+          <tr>
+            <td><strong style="font-family:monospace;color:var(--henna);">#{{ pmt.booking.booking_ref }}</strong></td>
+            <td>
+              <div style="font-weight:600;font-size:0.88rem;">{{ pmt.booking.customer_name }}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">{{ pmt.booking.booking_date|date:"M d, Y" }}</div>
+            </td>
+            <td style="font-size:0.85rem;">{{ pmt.booking.service.title|truncatechars:28 }}</td>
+            <td style="font-weight:700;">₹{{ pmt.total_amount|floatformat:0 }}</td>
+            <td style="color:#16a34a;font-weight:600;">₹{{ pmt.advance_paid|floatformat:0 }}</td>
+            <td style="color:{% if pmt.remaining_amount > 0 %}var(--henna){% else %}#16a34a{% endif %};font-weight:600;">
+              ₹{{ pmt.remaining_amount|floatformat:0 }}
+            </td>
+            <td><span class="status-pill status-{{ pmt.payment_status }}">{{ pmt.get_payment_status_display }}</span></td>
+            <td>
+              <a href="{% url 'panel:payment_detail' pmt.pk %}" class="btn-admin btn-admin-outline btn-admin-sm">Update</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No payment records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
